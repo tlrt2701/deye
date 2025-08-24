@@ -1,20 +1,23 @@
-ARG BUILD_FROM=ghcr.io/home-assistant/aarch64-addon-base:14.3.2
+# 📦 Basis-Image für Home Assistant Add-ons
+ARG BUILD_FROM=ghcr.io/home-assistant/aarch64-base:3.14
 FROM $BUILD_FROM
 
+# 🌍 Spracheinstellung
 ENV LANG C.UTF-8
 
-# Python + pip
+# 🛠️ Systempakete installieren
 RUN apk add --no-cache python3 py3-pip
 
-# venv optional, kann man machen
-RUN python3 -m venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
-
+# 📜 Anforderungen installieren (direkt ins System, keine venv!)
 COPY requirements.txt /requirements.txt
-RUN pip3 install -r /requirements.txt
+RUN pip3 install --no-cache-dir -r /requirements.txt
 
-COPY run.sh /
+# 📁 Skripte kopieren
+COPY run.sh /run.sh
 COPY sdm630_emulator.py /sdm630_emulator.py
-RUN chmod a+x /run.sh
 
+# 🔐 Ausführbarkeit sicherstellen
+RUN chmod +x /run.sh
+
+# 🚀 Startbefehl definieren (run.sh wird als PID 1 ausgeführt)
 CMD [ "/run.sh" ]
